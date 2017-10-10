@@ -1,0 +1,101 @@
+# Encrypt
+encrypt:
+  key-store:
+    alias: XPressoConfigService
+    location: classpath:/server.jks
+    password: xpr3s5o
+    secret: xpr3s5o
+
+# Eureka
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7070/eureka
+  instance:
+    healthCheckUrlPath: ${management.context-path}/health
+    statusPageUrlPath: ${management.context-path}/info
+    prefer-ip-address: true
+    metadataMap:
+      instanceId: ${spring.application.name}:${spring.application.index}
+      management.port: ${management.port}
+
+# Logging
+logging:
+  level:
+    com.netflix.discovery: 'OFF'
+    org.springframework.cloud: 'INFO'
+  path: /xpressolab/logs/services/${info.service.type}/${spring.application.name}
+  file: ${logging.path}/${spring.application.index}_application.log
+  register-shutdown-hook: true
+
+# Management
+management:
+  context-path: /
+  port: 9060
+  security:
+    enabled: false
+
+# Server
+server:
+  context-path: /
+  port: 6060
+  tomcat:
+    accesslog:
+      enabled: true
+      directory: ${logging.path}/
+      prefix: ${spring.application.index}_access_log
+  compression:
+    enabled: true
+
+# Spring
+spring:
+  main:
+    banner-mode: off
+  cloud:
+    bus:
+      destination: ${spring.application.name}-events
+    config:
+      server:
+        native:
+          search-locations: ${CONFIG_BASE_PATH:classpath:/shared}
+  rabbitmq:
+    host: ${HABBITMQ_HOSTS:localhost}
+    port: 5672
+    username: edge
+    password: edge
+
+---
+
+# Spring
+spring:
+  profiles: git
+
+  cloud:
+    config:
+      server:
+        git:
+          basedir: /xpressolab/etc/services
+          clone-on-start: true
+          force-pull: true
+          password: ${git.password}
+          search-paths: '{application}'
+          uri: https://github.com/xpressolab/xpresso-samples-config.git
+          username: ${git.username}
+
+---
+
+spring:
+  profiles: staging
+
+---
+
+spring:
+  profiles: production
+
+# Management
+management:
+  security:
+    enabled: true
+
+# Security
+
