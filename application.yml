@@ -49,8 +49,6 @@ server:
 
 # Spring
 spring:
-  main:
-    banner-mode: off
   cloud:
     bus:
       destination: ${spring.application.name}-events
